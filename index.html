@@ -2,499 +2,471 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aruna Creative — Creative Digital Studio</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#10131d;--surface:#171b28;--surface2:#1d2332;
+      --text:#f4f5f8;--muted:#a5adbd;--line:rgba(255,255,255,.1);
+      --accent:#a6f36b;--purple:#a99aff;--container:1160px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;scroll-padding-top:90px}
+    body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);line-height:1.65;overflow-x:hidden}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(ellipse at 80% 5%,rgba(169,154,255,.12),transparent 34%),radial-gradient(ellipse at 8% 45%,rgba(166,243,107,.07),transparent 32%)}
+    a{color:inherit;text-decoration:none}
+    button{font:inherit}
+    img{display:block;max-width:100%}
+    .container{width:min(var(--container),calc(100% - 48px));margin:auto}
+    .section{padding:112px 0;position:relative}
+    .eyebrow{display:inline-flex;align-items:center;gap:10px;color:var(--accent);font-size:.76rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+    .eyebrow::before{content:"";width:25px;height:1px;background:var(--accent)}
+    h1,h2,h3,.brand{font-family:"Manrope",sans-serif;letter-spacing:-.045em}
+    .section-heading{max-width:690px;margin-bottom:42px}
+    .section-heading h2{font-size:clamp(2.2rem,5vw,3.7rem);line-height:1.12;margin:15px 0}
+    .section-heading p,.muted{color:var(--muted)}
+    .accent{color:var(--accent)}
+    .btn{border:1px solid transparent;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:13px 20px;border-radius:999px;font-weight:700;cursor:pointer;transition:.25s}
+    .btn:hover{transform:translateY(-3px)}
+    .btn-primary{background:var(--accent);color:#12170e;box-shadow:0 8px 30px rgba(166,243,107,.15)}
+    .btn-primary:hover{background:#c8ff9d}
+    .btn-outline{border-color:var(--line);color:var(--text);background:rgba(255,255,255,.025)}
+    .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+    .arrow{font-size:1.1rem;transition:.25s}
+    .btn:hover .arrow{transform:translateX(4px)}
 
-    <title>Company Profile</title>
+    /* NAVBAR */
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:50;height:78px;display:flex;align-items:center;border-bottom:1px solid transparent;transition:.3s}
+    .navbar.scrolled{background:rgba(16,19,29,.88);backdrop-filter:blur(18px);border-color:var(--line);height:68px}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:inline-flex;align-items:center;gap:11px;font-size:1.15rem;font-weight:800}
+    .brand-mark{width:35px;height:35px;border-radius:11px;display:grid;place-items:center;color:#11170c;background:var(--accent);font-weight:900}
+    .nav-links{display:flex;align-items:center;gap:31px;list-style:none}
+    .nav-links a{color:#c3c9d4;font-size:.9rem;transition:color .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--accent)}
+    .nav-cta{padding:10px 17px;font-size:.86rem}
+    .menu-toggle{display:none;background:none;border:0;color:white;font-size:1.7rem;cursor:pointer}
 
-    <!-- SUPABASE LIBRARY -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    /* HERO */
+    .hero{min-height:760px;display:flex;align-items:center;padding:145px 0 90px;overflow:hidden}
+    .hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:45px;align-items:center}
+    .hero-copy{position:relative;z-index:2}
+    .hero h1{font-size:clamp(3.3rem,7vw,6.1rem);line-height:.99;margin:22px 0 25px}
+    .hero h1 .outline{color:transparent;-webkit-text-stroke:1.3px rgba(244,245,248,.75)}
+    .hero-copy>p{color:var(--muted);max-width:520px;font-size:1.05rem}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:13px;margin-top:32px}
+    .hero-note{display:flex;align-items:center;gap:12px;margin-top:48px;color:var(--muted);font-size:.82rem}
+    .live-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 0 6px rgba(166,243,107,.1)}
+    .hero-art{min-height:480px;position:relative;display:grid;place-items:center}
+    .orb{position:absolute;width:390px;height:390px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d2ffac,#8bdc64 38%,#475d43 70%,#202a29);filter:drop-shadow(0 20px 70px rgba(166,243,107,.17));animation:float 7s ease-in-out infinite}
+    .orb::before,.orb::after{content:"";position:absolute;border:1px solid rgba(255,255,255,.35);border-radius:50%;inset:-25px;transform:rotateX(67deg) rotate(-25deg)}
+    .orb::after{inset:-55px;transform:rotateX(67deg) rotate(35deg);border-color:rgba(169,154,255,.38)}
+    .hero-card{position:absolute;z-index:2;padding:18px 20px;border:1px solid rgba(255,255,255,.16);background:rgba(24,29,42,.78);backdrop-filter:blur(16px);border-radius:17px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+    .hero-card small{color:var(--muted);display:block;font-size:.72rem}
+    .hero-card strong{font-family:"Manrope";font-size:1.3rem}
+    .card-one{top:55px;right:-5px;animation:float 6s ease-in-out infinite reverse}
+    .card-two{bottom:55px;left:-12px;animation:float 8s ease-in-out infinite}
+    .spark{position:absolute;color:var(--accent);font-size:2rem;animation:twinkle 3s ease-in-out infinite}
+    .s1{top:45px;left:35px}.s2{bottom:80px;right:30px;animation-delay:1s}
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-            scroll-behavior: smooth;
-        }
+    /* MARQUEE */
+    .marquee-wrap{border-block:1px solid var(--line);overflow:hidden;background:rgba(255,255,255,.018)}
+    .marquee{display:flex;width:max-content;gap:42px;padding:17px 0;animation:marquee 28s linear infinite}
+    .marquee span{color:#8f98a9;font-family:"Manrope";font-size:.82rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+    .marquee b{color:var(--accent);font-weight:400}
 
-        body {
-            background: #f8fafc;
-            color: #1e293b;
-            line-height: 1.6;
-        }
+    /* ABOUT */
+    .about-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:80px;align-items:center}
+    .about-visual{min-height:420px;border-radius:28px;position:relative;overflow:hidden;background:linear-gradient(145deg,#272e40,#171c2a 60%,#283b2c);border:1px solid var(--line);display:flex;align-items:end;padding:30px}
+    .about-visual::before{content:"";position:absolute;width:280px;height:280px;border-radius:50%;top:40px;left:50%;transform:translateX(-50%);background:radial-gradient(circle at 35% 30%,#d4ffb5,#8fdb69 45%,#3a5038);box-shadow:0 0 90px rgba(166,243,107,.15)}
+    .about-visual::after{content:"AC";position:absolute;top:85px;left:0;right:0;text-align:center;font:800 7rem "Manrope";color:rgba(15,20,16,.72);letter-spacing:-.1em}
+    .visual-caption{position:relative;z-index:2;width:100%;display:flex;justify-content:space-between;align-items:end;gap:20px}
+    .visual-caption strong{font:800 1.5rem "Manrope"}
+    .visual-caption span{color:#d5decf;font-size:.8rem}
+    .about-copy h2{font-size:clamp(2.2rem,4.5vw,3.6rem);line-height:1.1;margin:15px 0 22px}
+    .about-copy p{color:var(--muted);margin-bottom:15px}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:35px;padding-top:27px;border-top:1px solid var(--line)}
+    .stat strong{display:block;font:800 2rem "Manrope";color:var(--accent)}
+    .stat span{color:var(--muted);font-size:.78rem}
 
-        header {
-            background: #14243a;
-            color: white;
-            padding: 18px 8%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    /* SERVICES */
+    .services-section{background:linear-gradient(180deg,transparent,rgba(255,255,255,.018),transparent)}
+    .service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .service-card{background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden;transition:transform .35s,border-color .35s,box-shadow .35s}
+    .service-card:hover{transform:translateY(-9px);border-color:rgba(166,243,107,.55);box-shadow:0 22px 55px rgba(0,0,0,.22)}
+    .service-image{height:205px;overflow:hidden;background:linear-gradient(135deg,#2c3546,#1c2630)}
+    .service-image img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+    .service-card:hover .service-image img{transform:scale(1.07)}
+    .service-content{padding:24px}
+    .service-number{color:var(--accent);font:700 .75rem "Manrope";letter-spacing:.12em}
+    .service-content h3{font-size:1.25rem;margin:9px 0}
+    .service-content p{color:var(--muted);font-size:.9rem}
+    .service-empty,.team-empty{grid-column:1/-1;padding:35px;text-align:center;border:1px dashed var(--line);border-radius:22px;color:var(--muted)}
 
-        .logo {
-            font-size: 23px;
-            font-weight: bold;
-        }
+    /* TEAM */
+    .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .team-card{background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden;transition:transform .3s,border-color .3s}
+    .team-card:hover{transform:translateY(-7px);border-color:rgba(169,154,255,.65)}
+    .team-photo{height:285px;background:linear-gradient(145deg,#30394b,#1c2230);overflow:hidden}
+    .team-photo img{width:100%;height:100%;object-fit:cover;filter:saturate(.78);transition:transform .6s,filter .4s}
+    .team-card:hover .team-photo img{transform:scale(1.05);filter:saturate(1)}
+    .team-info{padding:22px}
+    .team-info h3{font-size:1.2rem}
+    .team-info p{color:var(--accent);font-size:.85rem;margin-top:3px}
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 18px;
-        }
+    /* CTA + FOOTER */
+    .cta-panel{padding:clamp(35px,7vw,75px);border-radius:30px;position:relative;overflow:hidden;background:linear-gradient(120deg,#b5fa83,#8ddc70 55%,#b9f3a1);color:#172013}
+    .cta-panel::after{content:"✳";position:absolute;right:5%;top:-75px;font-size:20rem;line-height:1;color:rgba(20,40,16,.08);transform:rotate(15deg)}
+    .cta-panel h2{font-size:clamp(2.2rem,5vw,4rem);line-height:1.05;max-width:650px;position:relative;z-index:1}
+    .cta-panel p{margin:18px 0 27px;max-width:520px;color:rgba(23,32,19,.75);position:relative;z-index:1}
+    .cta-panel .btn{background:#172013;color:white;position:relative;z-index:1}
+    footer{padding:35px 0;border-top:1px solid var(--line)}
+    .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:20px;color:var(--muted);font-size:.82rem}
+    .footer-links{display:flex;gap:20px}
+    .footer-links a:hover{color:var(--accent)}
 
-        nav a:hover {
-            color: #60a5fa;
-        }
-
-        .hero {
-            background: linear-gradient(120deg, #14243a, #2563eb);
-            color: white;
-            text-align: center;
-            padding: 85px 20px;
-        }
-
-        .hero img {
-            width: 110px;
-            height: 110px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 4px solid white;
-            margin-bottom: 18px;
-        }
-
-        .hero h1 {
-            font-size: 38px;
-            margin-bottom: 12px;
-        }
-
-        .hero p {
-            max-width: 650px;
-            margin: auto;
-        }
-
-        section {
-            padding: 65px 8%;
-        }
-
-        .judul {
-            text-align: center;
-            margin-bottom: 35px;
-        }
-
-        .judul h2 {
-            color: #14243a;
-            font-size: 30px;
-        }
-
-        .about {
-            max-width: 750px;
-            margin: auto;
-            text-align: center;
-        }
-
-        .tahun {
-            margin-top: 15px;
-            color: #2563eb;
-            font-weight: bold;
-        }
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 3px 12px rgba(0,0,0,.07);
-            text-align: center;
-            padding-bottom: 20px;
-        }
-
-        .card img {
-            width: 100%;
-            height: 190px;
-            object-fit: cover;
-            background: #dbeafe;
-        }
-
-        .card h3 {
-            color: #2563eb;
-            margin: 15px 10px 8px;
-        }
-
-        .card p {
-            padding: 0 18px;
-            color: #64748b;
-        }
-
-        .team {
-            background: #eff6ff;
-        }
-
-        .contact {
-            max-width: 600px;
-            margin: auto;
-            text-align: center;
-        }
-
-        .contact p {
-            margin: 10px;
-        }
-
-        footer {
-            background: #14243a;
-            color: white;
-            text-align: center;
-            padding: 22px;
-        }
-
-        .status {
-            text-align: center;
-            padding: 15px;
-            color: #64748b;
-        }
-
-        @media(max-width: 700px) {
-            header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            nav a {
-                margin: 0 6px;
-                font-size: 13px;
-            }
-
-            .hero h1 {
-                font-size: 28px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    /* ANIMATION + UTILITIES */
+    .loading-state{color:var(--muted);text-align:center;padding:35px;grid-column:1/-1}
+    .error-note{color:#ffb3a9;text-align:center;padding:14px;font-size:.85rem}
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .75s ease,transform .75s cubic-bezier(.2,.7,.2,1)}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .delay-1{transition-delay:.1s}.delay-2{transition-delay:.2s}.delay-3{transition-delay:.3s}
+    .scroll-progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:100}
+    .back-top{position:fixed;right:24px;bottom:24px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface2);color:var(--accent);cursor:pointer;opacity:0;visibility:hidden;transform:translateY(10px);transition:.25s;z-index:30}
+    .back-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+    @keyframes float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-17px) rotate(3deg)}}
+    @keyframes twinkle{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+    @keyframes marquee{to{transform:translateX(-50%)}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+    @media(max-width:900px){.hero-grid{grid-template-columns:1fr .8fr;gap:10px}.hero-art{transform:scale(.82)}.about-grid{gap:40px}.service-grid,.team-grid{grid-template-columns:repeat(2,1fr)}.nav-links{gap:18px}}
+    @media(max-width:700px){
+      .container{width:min(100% - 36px,var(--container))}.section{padding:82px 0}
+      .navbar{height:68px}.menu-toggle{display:block}.nav-cta{display:none}
+      .nav-links{position:absolute;top:68px;left:18px;right:18px;padding:18px;display:none;flex-direction:column;align-items:stretch;gap:0;background:#1a2030;border:1px solid var(--line);border-radius:17px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+      .nav-links.open{display:flex}.nav-links a{display:block;padding:12px 8px}
+      .hero{min-height:auto;padding:130px 0 65px}.hero-grid{grid-template-columns:1fr}
+      .hero h1{font-size:clamp(3.2rem,15vw,5rem)}
+      .hero-art{min-height:340px;transform:scale(.78);margin:-10px 0 -30px}
+      .orb{width:320px;height:320px}.card-one{right:-12px;top:20px}.card-two{left:-8px;bottom:25px}
+      .about-grid{grid-template-columns:1fr}.about-visual{min-height:330px}
+      .about-visual::before{width:230px;height:230px}.about-visual::after{top:78px;font-size:5.5rem}
+      .service-grid,.team-grid{grid-template-columns:1fr}.service-image{height:225px}.team-photo{height:330px}
+      .stats{gap:10px}.stat strong{font-size:1.6rem}
+      .footer-inner{flex-direction:column;text-align:center}.footer-links{flex-wrap:wrap;justify-content:center}
+    }
+  </style>
 </head>
-
 <body>
+  <div class="scroll-progress" id="scrollProgress"></div>
 
-    <!-- HEADER -->
-    <header>
-        <div class="logo" id="header-name">COMPANY.</div>
+  <header class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a class="brand" href="#home"><span class="brand-mark">A.</span><span id="brandName">Aruna Creative</span></a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Buka menu" aria-expanded="false">☰</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home" class="active">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#team">Our Team</a></li>
+      </ul>
+      <a href="#contact" class="btn btn-primary nav-cta">Let's Talk <span class="arrow">↗</span></a>
+    </div>
+  </header>
 
-        <nav>
-            <a href="#home">Home</a>
-            <a href="#about">Tentang</a>
-            <a href="#services">Layanan</a>
-            <a href="#team">Tim</a>
-            <a href="#contact">Kontak</a>
-        </nav>
-    </header>
-
-
-    <!-- HOME -->
+  <main>
     <section class="hero" id="home">
-
-        <img id="company-logo"
-             src="https://placehold.co/150x150?text=Logo"
-             alt="Logo Perusahaan">
-
-        <h1 id="company-name">Memuat Nama Perusahaan...</h1>
-
-        <p id="company-description">
-            Menghubungkan kreativitas dan teknologi.
-        </p>
-
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow reveal">Creative digital studio</span>
+          <h1 class="reveal delay-1">Ideas into<br><span class="outline">impactful</span><br><span class="accent">experiences.</span></h1>
+          <p class="reveal delay-2" id="heroDescription">We combine creativity, strategy, and technology to build digital experiences that move ideas forward.</p>
+          <div class="hero-actions reveal delay-3">
+            <a href="#services" class="btn btn-primary">Explore our work <span class="arrow">↗</span></a>
+            <a href="#about" class="btn btn-outline">Discover more</a>
+          </div>
+          <div class="hero-note reveal delay-3"><span class="live-dot"></span> Creative minds. Meaningful digital solutions.</div>
+        </div>
+        <div class="hero-art reveal delay-2" aria-hidden="true">
+          <div class="orb"></div><span class="spark s1">✳</span><span class="spark s2">✦</span>
+          <div class="hero-card card-one"><small>Our mindset</small><strong>Think different.</strong></div>
+          <div class="hero-card card-two"><small>Our approach</small><strong>Make it matter.</strong></div>
+        </div>
+      </div>
     </section>
 
+    <div class="marquee-wrap" aria-hidden="true">
+      <div class="marquee">
+        <span>Creative strategy <b>✳</b></span><span>Digital design <b>✳</b></span><span>Web development <b>✳</b></span><span>Visual identity <b>✳</b></span>
+        <span>Creative strategy <b>✳</b></span><span>Digital design <b>✳</b></span><span>Web development <b>✳</b></span><span>Visual identity <b>✳</b></span>
+      </div>
+    </div>
 
-    <!-- ABOUT -->
-    <section id="about">
-
-        <div class="judul">
-            <h2>Tentang Kami</h2>
+    <section class="section" id="about">
+      <div class="container about-grid">
+        <div class="about-visual reveal">
+          <div class="visual-caption"><div><strong>Beyond ordinary.</strong><br><span>Creativity meets technology.</span></div><span>EST. <b id="yearLabel">2024</b></span></div>
         </div>
-
-        <div class="about">
-
-            <p id="about-description">
-                Memuat informasi perusahaan...
-            </p>
-
-            <p class="tahun">
-                Tahun Berdiri:
-                <span id="company-year">-</span>
-            </p>
-
+        <div class="about-copy">
+          <span class="eyebrow reveal">Who we are</span>
+          <h2 class="reveal delay-1">We turn bold ideas into <span class="accent">real possibilities.</span></h2>
+          <p class="reveal delay-2" id="aboutDescription">We are a creative digital studio focused on thoughtful design, useful technology, and experiences that connect with people.</p>
+          <p class="reveal delay-2">From the first sketch to the final launch, we believe every detail should have a purpose. Our goal is to make digital feel more human.</p>
+          <div class="stats reveal delay-3">
+            <div class="stat"><strong data-count="3">0</strong><span>Core services</span></div>
+            <div class="stat"><strong data-count="100" data-suffix="%">0</strong><span>Creative energy</span></div>
+            <div class="stat"><strong data-count="1">0</strong><span>Shared vision</span></div>
+          </div>
         </div>
-
+      </div>
     </section>
 
-
-    <!-- SERVICES -->
-    <section id="services" style="background:#eff6ff;">
-
-        <div class="judul">
-            <h2>Layanan Kami</h2>
-            <p>Berbagai layanan yang kami sediakan.</p>
+    <section class="section services-section" id="services">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow reveal">What we do</span>
+          <h2 class="reveal delay-1">Good ideas deserve <span class="accent">great execution.</span></h2>
+          <p class="reveal delay-2">Explore the services we provide to help ideas grow into something real.</p>
         </div>
-
-        <div class="cards" id="services-container">
-
-            <p class="status">Memuat layanan...</p>
-
-        </div>
-
+        <div class="service-grid" id="serviceGrid"><div class="loading-state">Loading services from Supabase...</div></div>
+      </div>
     </section>
 
-
-    <!-- TEAM -->
-    <section class="team" id="team">
-
-        <div class="judul">
-            <h2>Tim Kami</h2>
-            <p>Kenali anggota perusahaan kami.</p>
+    <section class="section" id="team">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow reveal">The people behind it</span>
+          <h2 class="reveal delay-1">Small team. <span class="accent">Big imagination.</span></h2>
+          <p class="reveal delay-2">Meet the people who bring curiosity, skill, and fresh perspectives to every project.</p>
         </div>
-
-        <div class="cards" id="team-container">
-
-            <p class="status">Memuat anggota tim...</p>
-
-        </div>
-
+        <div class="team-grid" id="teamGrid"><div class="loading-state">Loading team from Supabase...</div></div>
+      </div>
     </section>
 
-
-    <!-- CONTACT -->
-    <section id="contact">
-
-        <div class="judul">
-            <h2>Hubungi Kami</h2>
-            <p>Informasi kontak perusahaan.</p>
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="cta-panel reveal">
+          <h2>Have an idea?<br>Let's make it <span style="font-style:italic">happen.</span></h2>
+          <p>Every meaningful project starts with a conversation. Take a look at what we do and imagine what we could create next.</p>
+          <a href="#services" class="btn">Explore our services <span class="arrow">↗</span></a>
         </div>
-
-        <div class="contact">
-
-            <p><b>Email:</b> info@company.com</p>
-            <p><b>Telepon:</b> 0812-3456-7890</p>
-            <p><b>Alamat:</b> Indonesia</p>
-
-        </div>
-
+      </div>
     </section>
+  </main>
 
+  <footer>
+    <div class="container footer-inner">
+      <a class="brand" href="#home"><span class="brand-mark">A.</span><span id="footerBrand">Aruna Creative</span></a>
+      <span>© <span id="currentYear"></span> <span id="footerCompany">Aruna Creative</span>. Made with purpose.</span>
+      <div class="footer-links"><a href="#about">About</a><a href="#services">Services</a><a href="#team">Team</a></div>
+    </div>
+  </footer>
 
-    <!-- FOOTER -->
-    <footer>
-        <p>
-            &copy; <span id="year"></span>
-            <span id="footer-name">Company Profile</span>.
-            All Rights Reserved.
-        </p>
-    </footer>
+  <button class="back-top" id="backTop" aria-label="Back to top">↑</button>
 
+  <script>
+    // SUPABASE CONFIGURATION
+    const SUPABASE_URL = "https://xzntncojclwhzcpdztus.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_Zxoq1xkCILYGXZl328jjEQ_mbanAwNC";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    <!-- JAVASCRIPT -->
-    <script>
+    const $ = selector => document.querySelector(selector);
 
-        // ===================================
-        // 1. SUPABASE CONFIGURATION
-        // ===================================
+    function escapeHTML(value = "") {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      })[char]);
+    }
 
-        const SUPABASE_URL = "https://xzntncojclwhzcpdztus.supabase.co";
+    function safeImageUrl(value) {
+      try {
+        const url = new URL(value);
+        return ["https:","http:"].includes(url.protocol) ? url.href : "";
+      } catch { return ""; }
+    }
 
-        const SUPABASE_KEY = "sb_publishable_Zxoq1xkCILYGXZl328jjEQ_mbanAwNC";
+    function imageMarkup(url, alt) {
+      const safeUrl = safeImageUrl(url);
+      if (!safeUrl) return "";
+      return `<img src="${escapeHTML(safeUrl)}" alt="${escapeHTML(alt)}" loading="lazy" onerror="this.style.display='none'">`;
+    }
 
-        const supabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
+    async function loadCompany() {
+      const {data,error} = await supabaseClient
+        .from("perusahaan").select("*").limit(1).maybeSingle();
 
+      if (error) {
+        console.error("Company data:",error);
+        return;
+      }
+      if (!data) return;
 
-        // ===================================
-        // 2. MENGAMBIL DATA PERUSAHAAN
-        // ===================================
+      const name = data.nama || "Aruna Creative";
+      $("#brandName").textContent = name;
+      $("#footerBrand").textContent = name;
+      $("#footerCompany").textContent = name;
+      document.title = `${name} — Company Profile`;
 
-        async function getCompany() {
+      if (data.deskripsi) {
+        $("#heroDescription").textContent = data.deskripsi;
+        $("#aboutDescription").textContent = data.deskripsi;
+      }
+      if (data.tahun_berdiri) $("#yearLabel").textContent = data.tahun_berdiri;
 
-            const { data, error } = await supabaseClient
-                .from("perusahaan")
-                .select("*")
-                .limit(1)
-                .maybeSingle();
-
-            if (error) {
-                console.error("Error perusahaan:", error);
-                document.getElementById("company-name").textContent =
-                    "Gagal memuat perusahaan";
-                return;
-            }
-
-            if (!data) {
-                document.getElementById("company-name").textContent =
-                    "Data perusahaan belum tersedia";
-                return;
-            }
-
-            document.getElementById("company-name").textContent =
-                data.nama || "Nama Perusahaan";
-
-            document.getElementById("header-name").textContent =
-                data.nama || "COMPANY.";
-
-            document.getElementById("footer-name").textContent =
-                data.nama || "Company Profile";
-
-            document.getElementById("company-description").textContent =
-                data.deskripsi || "";
-
-            document.getElementById("about-description").textContent =
-                data.deskripsi || "";
-
-            document.getElementById("company-year").textContent =
-                data.tahun_berdiri || "-";
-
-            if (data.logo) {
-                document.getElementById("company-logo").src = data.logo;
-            }
+      if (data.logo) {
+        const logoUrl = safeImageUrl(data.logo);
+        if (logoUrl) {
+          const mark = document.querySelector(".brand-mark");
+          mark.innerHTML = imageMarkup(logoUrl,`${name} logo`);
+          const img = mark.querySelector("img");
+          if (img) {
+            img.style.width = "100%";
+            img.style.height = "100%";
+            img.style.objectFit = "cover";
+            img.style.borderRadius = "inherit";
+          }
         }
+      }
+    }
 
+    async function loadServices() {
+      const grid = $("#serviceGrid");
+      const {data,error} = await supabaseClient
+        .from("layanan").select("*").order("id",{ascending:true});
 
-        // ===================================
-        // 3. MENGAMBIL DATA LAYANAN
-        // ===================================
+      if (error) {
+        console.error("Services:",error);
+        grid.innerHTML = '<div class="error-note">Services gagal dimuat. Periksa policy SELECT tabel layanan.</div>';
+        return;
+      }
+      if (!data || data.length === 0) {
+        grid.innerHTML = '<div class="service-empty">Belum ada data layanan di database.</div>';
+        return;
+      }
 
-        async function getServices() {
+      grid.innerHTML = data.map((item,index) => `
+        <article class="service-card reveal ${index%3===1?"delay-1":index%3===2?"delay-2":""}">
+          <div class="service-image">${imageMarkup(item.foto,item.nama_layanan||"Service image")}</div>
+          <div class="service-content">
+            <span class="service-number">0${index+1} / SERVICE</span>
+            <h3>${escapeHTML(item.nama_layanan||"Untitled service")}</h3>
+            <p>${escapeHTML(item.deskripsi||"A creative solution designed around your needs.")}</p>
+          </div>
+        </article>
+      `).join("");
+      observeReveals();
+    }
 
-            const { data, error } = await supabaseClient
-                .from("layanan")
-                .select("*")
-                .order("id", { ascending: true });
+    async function loadTeam() {
+      const grid = $("#teamGrid");
+      const {data,error} = await supabaseClient
+        .from("tim").select("*").order("id",{ascending:true});
 
-            const container =
-                document.getElementById("services-container");
+      if (error) {
+        console.error("Team:",error);
+        grid.innerHTML = '<div class="error-note">Data tim gagal dimuat. Periksa policy SELECT tabel tim.</div>';
+        return;
+      }
+      if (!data || data.length === 0) {
+        grid.innerHTML = '<div class="team-empty">Data anggota tim belum tersedia.</div>';
+        return;
+      }
 
-            if (error) {
-                console.error("Error layanan:", error);
-                container.innerHTML =
-                    '<p class="status">Gagal memuat layanan.</p>';
-                return;
+      grid.innerHTML = data.map((person,index) => `
+        <article class="team-card reveal ${index%3===1?"delay-1":index%3===2?"delay-2":""}">
+          <div class="team-photo">${imageMarkup(person.foto,person.nama||"Team member")}</div>
+          <div class="team-info">
+            <h3>${escapeHTML(person.nama||"Team member")}</h3>
+            <p>${escapeHTML(person.jabatan||"Creative team")}</p>
+          </div>
+        </article>
+      `).join("");
+      observeReveals();
+    }
+
+    // SCROLL REVEAL ANIMATION
+    let revealObserver;
+    function observeReveals() {
+      if (!("IntersectionObserver" in window)) {
+        document.querySelectorAll(".reveal").forEach(el=>el.classList.add("visible"));
+        return;
+      }
+      if (!revealObserver) {
+        revealObserver = new IntersectionObserver((entries,observer)=>{
+          entries.forEach(entry=>{
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              observer.unobserve(entry.target);
             }
+          });
+        },{threshold:.12});
+      }
+      document.querySelectorAll(".reveal:not(.visible)").forEach(el=>revealObserver.observe(el));
+    }
 
-            if (!data || data.length === 0) {
-                container.innerHTML =
-                    '<p class="status">Belum ada layanan.</p>';
-                return;
-            }
+    // ANIMATED STATISTICS
+    let countersStarted = false;
+    const statsObserver = new IntersectionObserver(entries=>{
+      if (entries.some(entry=>entry.isIntersecting) && !countersStarted) {
+        countersStarted = true;
+        document.querySelectorAll("[data-count]").forEach(counter=>{
+          const target = Number(counter.dataset.count);
+          const suffix = counter.dataset.suffix || "";
+          const start = performance.now();
+          function update(now) {
+            const progress = Math.min((now-start)/1100,1);
+            const eased = 1-Math.pow(1-progress,3);
+            counter.textContent = Math.round(target*eased)+suffix;
+            if (progress<1) requestAnimationFrame(update);
+          }
+          requestAnimationFrame(update);
+        });
+        statsObserver.disconnect();
+      }
+    },{threshold:.5});
+    statsObserver.observe(document.querySelector(".stats"));
 
-            container.innerHTML = "";
+    // MOBILE MENU
+    const navbar = $("#navbar");
+    const menuToggle = $("#menuToggle");
+    const navLinks = $("#navLinks");
 
-            data.forEach(item => {
+    menuToggle.addEventListener("click",()=>{
+      const open = navLinks.classList.toggle("open");
+      menuToggle.setAttribute("aria-expanded",String(open));
+      menuToggle.textContent = open ? "×" : "☰";
+    });
 
-                const card = document.createElement("div");
-                card.className = "card";
+    navLinks.querySelectorAll("a").forEach(link=>{
+      link.addEventListener("click",()=>{
+        navLinks.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded","false");
+        menuToggle.textContent = "☰";
+      });
+    });
 
-                const image = document.createElement("img");
-                image.src = item.foto ||
-                    "https://placehold.co/400x250?text=Layanan";
-                image.alt = item.nama_layanan || "Layanan";
+    // SCROLL PROGRESS + BACK TO TOP
+    const backTop = $("#backTop");
+    function onScroll() {
+      const scrollable = document.documentElement.scrollHeight-window.innerHeight;
+      const progress = scrollable>0 ? (window.scrollY/scrollable)*100 : 0;
+      $("#scrollProgress").style.width = `${progress}%`;
+      navbar.classList.toggle("scrolled",window.scrollY>25);
+      backTop.classList.toggle("show",window.scrollY>500);
+    }
 
-                const title = document.createElement("h3");
-                title.textContent = item.nama_layanan || "Layanan";
+    window.addEventListener("scroll",onScroll,{passive:true});
+    backTop.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
 
-                const description = document.createElement("p");
-                description.textContent = item.deskripsi || "";
+    $("#currentYear").textContent = new Date().getFullYear();
 
-                card.append(image, title, description);
-                container.appendChild(card);
+    observeReveals();
+    onScroll();
 
-            });
-        }
-
-
-        // ===================================
-        // 4. MENGAMBIL DATA TIM
-        // ===================================
-
-        async function getTeam() {
-
-            const { data, error } = await supabaseClient
-                .from("tim")
-                .select("*")
-                .order("id", { ascending: true });
-
-            const container =
-                document.getElementById("team-container");
-
-            if (error) {
-                console.error("Error tim:", error);
-                container.innerHTML =
-                    '<p class="status">Gagal memuat anggota tim.</p>';
-                return;
-            }
-
-            if (!data || data.length === 0) {
-                container.innerHTML =
-                    '<p class="status">Belum ada anggota tim.</p>';
-                return;
-            }
-
-            container.innerHTML = "";
-
-            data.forEach(item => {
-
-                const card = document.createElement("div");
-                card.className = "card";
-
-                const image = document.createElement("img");
-                image.src = item.foto ||
-                    "https://placehold.co/400x250?text=Foto";
-                image.alt = item.nama || "Anggota tim";
-
-                const name = document.createElement("h3");
-                name.textContent = item.nama || "Nama anggota";
-
-                const position = document.createElement("p");
-                position.textContent = item.jabatan || "Jabatan";
-
-                card.append(image, name, position);
-                container.appendChild(card);
-
-            });
-        }
-
-
-        // ===================================
-        // 5. MENJALANKAN SEMUA FUNGSI
-        // ===================================
-
-        async function loadWebsite() {
-
-            await Promise.all([
-                getCompany(),
-                getServices(),
-                getTeam()
-            ]);
-
-        }
-
-        loadWebsite();
-
-
-        // ===================================
-        // 6. TAHUN OTOMATIS
-        // ===================================
-
-        document.getElementById("year").textContent =
-            new Date().getFullYear();
-
-    </script>
-
+    // READ DATA FROM SUPABASE. NO SQL CHANGES REQUIRED.
+    Promise.all([loadCompany(),loadServices(),loadTeam()]);
+  </script>
 </body>
 </html>
